@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -14,11 +14,39 @@ import AccountPage from '../Account';
 import AdminPage from '../Admin';
  
 import * as ROUTES from '../../constants/routes';
+import { withFirebase } from '../Firebase';
  
-const App = () => (
-  <Router>
-    <div>
-      <Navigation />
+ class App extends Component {
+  constructor(props) {
+    super(props);
+ 
+    this.state = {
+      authUser: null,
+    };
+  }
+ 
+  // The helper function onAuthStateChanged() receives a function 
+  // as parameter that has access to the authenticated user
+  componentDidMount() {
+    this.listener = this.props.firebase.auth.onAuthStateChanged(
+      authUser => {
+      authUser
+        ? this.setState({ authUser })
+        : this.setState({ authUser: null }); //  If a user signs out, the authUser object becomes null, and all components depending on it adjust their behavior
+    });
+  }
+
+  // We also want to avoid memory leaks that lead to performance 
+  // issues, so we'll remove the listener if the component unmounts.
+  componentWillUnmount() {
+    this.listener();
+  }
+
+  render() {
+    return (
+      <Router>
+        <div>
+          <Navigation authUser={this.state.authUser} />
  
       <hr />
  
@@ -31,6 +59,8 @@ const App = () => (
       <Route path={ROUTES.ADMIN} component={AdminPage} />
     </div>
   </Router>
-);
- 
-export default App;
+    );
+  }
+}
+
+export default withFirebase(App);

@@ -28,7 +28,7 @@ class Firebase {
     doSignInWithEmailAndPassword = (email, password) =>
         this.auth.signInWithEmailAndPassword(email, password);
 
-    // irebase knows about the currently authenticated user. so no need to pass any argument   
+    // firebase knows about the currently authenticated user. so no need to pass any argument   
     doSignOut = () => this.auth.signOut();
 
     // authentication methods to reset and change a password for an authenticated user:
